@@ -12,7 +12,6 @@ import (
 var ErrAccessNotAllowed = errors.New("access to requested resource not allowed")
 var ErrAccountNotFound = errors.New("account not found")
 
-
 type Account interface {
 	Balance(
 		ctx context.Context,

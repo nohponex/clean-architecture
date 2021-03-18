@@ -7,21 +7,21 @@ import (
 
 type (
 	AccountID string
-	Account interface {
+	Account   interface {
 		Add(amount money.Money)
 		Remove(amount money.Money) error
 		Balance() []money.Money
 	}
-	 account  struct {
-		 ID       AccountID
-		 Username string
-		 money    map[*money.Currency]*money.Money
-	 }
+	account struct {
+		ID       AccountID
+		Username string
+		money    map[*money.Currency]*money.Money
+	}
 )
 
 func NewAccount(ID AccountID) Account {
 	return &account{
-		ID: ID,
+		ID:    ID,
 		money: map[*money.Currency]*money.Money{},
 	}
 }
@@ -59,4 +59,3 @@ func (a *account) Remove(amount money.Money) error {
 	a.money[amount.Currency()], _ = existing.Subtract(&amount)
 	return nil
 }
-

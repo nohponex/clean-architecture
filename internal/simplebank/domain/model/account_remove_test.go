@@ -7,14 +7,14 @@ import (
 	"testing"
 )
 
-func Test_remove_GivenAccountNotHavingCurrency_ShouldFail(t *testing.T)  {
+func Test_remove_GivenAccountNotHavingCurrency_ShouldFail(t *testing.T) {
 	account := NewAccount("ABCD")
 
 	err := account.Remove(*money.New(500, "EUR"))
 	require.Error(t, err)
 }
 
-func Test_remove_GivenAccountHavingCurrencyButNotEnoughMoney_ShouldFail(t *testing.T)  {
+func Test_remove_GivenAccountHavingCurrencyButNotEnoughMoney_ShouldFail(t *testing.T) {
 	account := NewAccount("ABCD")
 
 	account.Add(*money.New(100, "EUR"))
@@ -23,7 +23,7 @@ func Test_remove_GivenAccountHavingCurrencyButNotEnoughMoney_ShouldFail(t *testi
 	require.Error(t, err)
 }
 
-func Test_remove_ShouldSubstract(t *testing.T)  {
+func Test_remove_ShouldSubstract(t *testing.T) {
 	account := NewAccount("ABCD")
 
 	account.Add(*money.New(125, "EUR"))
