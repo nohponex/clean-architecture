@@ -8,12 +8,13 @@ import (
 type (
 	AccountID string
 	Account   interface {
+		ID() AccountID
 		Add(amount money.Money)
 		Remove(amount money.Money) error
 		Balance() []money.Money
 	}
 	account struct {
-		ID       AccountID
+		iD       AccountID
 		Username string
 		money    map[*money.Currency]*money.Money
 	}
@@ -21,9 +22,13 @@ type (
 
 func NewAccount(ID AccountID) Account {
 	return &account{
-		ID:    ID,
+		iD:    ID,
 		money: map[*money.Currency]*money.Money{},
 	}
+}
+
+func (a account) ID() AccountID {
+	return a.iD
 }
 
 func (a account) Balance() []money.Money {
