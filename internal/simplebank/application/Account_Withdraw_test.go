@@ -65,6 +65,7 @@ func Test_Withdraw_Given_ThenShouldWithdrawAndSave(t *testing.T) {
 
 	{
 		fakeAccount := model.NewAccount(fakeAccountID)
+		fakeAccount.Add(*money.New(100, "EUR"))
 
 		accountRepositoryMock.On(
 			"Get",
