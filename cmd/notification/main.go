@@ -21,12 +21,13 @@ func main() {
 		panic(err)
 	}
 
-	useCase := application.NewEmailNotification()
-
 	if err := adapters.NewRabbitMQConsumer(
 		ctx,
 		connection,
-		useCase,
+		[]application.Notification{
+			application.NewEmailNotification(),
+			application.NewSMSNotification(),
+		},
 	); err != nil {
 		panic(err)
 	}

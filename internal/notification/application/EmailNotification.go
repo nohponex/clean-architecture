@@ -13,7 +13,7 @@ func NewEmailNotification() Notification {
 }
 
 func (e emailNotification) Withdrawn(ctx context.Context, accountID string, amount float32, currency string) error {
-	fmt.Printf("Notification for %q becase withdrawn %f %s\n", accountID, amount, currency)
+	fmt.Printf("Email Notification for %q becase withdrawn %f %s\n", accountID, amount, currency)
 
 	return nil
 }

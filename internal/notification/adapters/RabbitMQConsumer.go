@@ -6,22 +6,28 @@ import (
 	"github.com/nohponex/clean-architecture/internal/notification/application"
 	"github.com/streadway/amqp"
 	"math/rand"
+	"reflect"
 	"time"
 )
 
 func NewRabbitMQConsumer(
 	ctx context.Context,
 	connection *amqp.Connection,
-	useCase application.Notification,
+	notificationUseCases []application.Notification,
 ) error {
 	channel, err := connection.Channel()
 	if err != nil {
 		panic(err)
 	}
 
-	adapter := NewWithdrawnAdapter(useCase)
-	handle(ctx, channel, "notification", adapter)
+	for _, useCase := range notificationUseCases {
+		useCaseReflection := reflect.TypeOf(useCase)
+		adapter := NewWithdrawnAdapter(useCase)
+		go handle(ctx, channel, "notification-"+useCaseReflection.String(), adapter)
+	}
+	rand.Seed(time.Now().Unix())
 
+	<-ctx.Done()
 	return nil
 }
 
@@ -29,41 +35,40 @@ func handle(ctx context.Context, channel *amqp.Channel, queue string, adapter Ra
 	const exchange = "simplebank"
 
 	if _, err := channel.QueueDeclare(
-		queue, // name of the queue
-		true,  // durable
-		false, // delete when unused
-		false, // exclusive
-		false, // noWait
-		nil,   // arguments
+		queue,
+		true,
+		false,
+		false,
+		false,
+		nil,
 	); err != nil {
 		panic(err)
 	}
 
 	if err := channel.QueueBind(
-		queue,    // name of the queue
-		"#",      // bindingKey
-		exchange, // sourceExchange
-		false,    // noWait
-		nil,      // arguments
+		queue,
+		"#",
+		exchange,
+		false,
+		nil,
 	); err != nil {
 		panic(err)
 	}
 
-	rand.Seed(time.Now().Unix())
-
 	deliveries, err := channel.Consume(
-		queue, // name
+		queue,
 		fmt.Sprintf("%s-consumer-%d", queue, rand.Int31()),
-		false, // noAck
-		false, // exclusive
-		false, // noLocal
-		false, // noWait
-		nil,   // arguments
+		false,
+		false,
+		false,
+		false,
+		nil,
 	)
 	if err != nil {
 		panic(err)
 	}
 
+	fmt.Println("consuming from " + queue)
 	for {
 		select {
 		case d, ok := <-deliveries:
