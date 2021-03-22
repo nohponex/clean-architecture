@@ -24,7 +24,7 @@ type Account interface {
 		ctx context.Context,
 		personID model.PersonID,
 		accountID model.AccountID,
-	) (money.Money, error)
+	) ([]money.Money, error)
 
 	Withdraw(
 		ctx context.Context,
@@ -77,8 +77,31 @@ func (u accountUseCase) Balance(
 	ctx context.Context,
 	personID model.PersonID,
 	accountID model.AccountID,
-) (money.Money, error) {
-	panic("implement me")
+) ([]money.Money, error) {
+	{
+		//Perform access checks
+		hasAccess, err := u.accessService.PersonHasAccessToAccount(
+			ctx,
+			personID,
+			accountID,
+		)
+		if err != nil {
+			return nil, err
+		}
+		if !hasAccess {
+			return nil, ErrAccessNotAllowed
+		}
+	}
+
+	account, found, err := u.accountRepository.Get(ctx, accountID)
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		return nil, ErrAccountNotFound
+	}
+
+	return account.Balance(), nil
 }
 
 //@throws ErrAccessNotAllowed
