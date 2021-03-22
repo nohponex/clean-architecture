@@ -1,13 +1,13 @@
 version: '3'
 services:
-  postgres:
-    image: postgres:11
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_DB=docker_db
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=password
+#  postgres:
+#    image: postgres:11
+#    ports:
+#      - "5432:5432"
+#    environment:
+#      - POSTGRES_DB=docker_db
+#      - POSTGRES_USER=admin
+#      - POSTGRES_PASSWORD=password
   http:
     user: $UID
     volumes:
@@ -23,13 +23,13 @@ services:
       - SYS_PTRACE
     restart: on-failure
     ports:
-      - "43203:40000"
-      - "43205:8080"
+      - "40000:40000"
+      - "8080:8080"
     environment:
       - CGO_ENABLED=0
       - VH_DB_USER=admin
       - DB_PASS=password
       - DB_HOST=postgres
       - DB_PORT=5432
-    depends_on:
-      - postgres
+#    depends_on:
+#      - postgres

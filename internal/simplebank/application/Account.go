@@ -11,24 +11,31 @@ import (
 
 var ErrAccessNotAllowed = errors.New("access to requested resource not allowed")
 var ErrAccountNotFound = errors.New("account not found")
+var ErrAccountAlreadyExists = errors.New("account already exists")
 
 type Account interface {
+	Open(
+		ctx context.Context,
+		personID model.PersonID,
+		accountID model.AccountID,
+	) error
+
 	Balance(
 		ctx context.Context,
-		person model.PersonID,
+		personID model.PersonID,
 		accountID model.AccountID,
 	) (money.Money, error)
 
 	Withdraw(
 		ctx context.Context,
-		person model.PersonID,
+		personID model.PersonID,
 		accountID model.AccountID,
 		amount money.Money,
 	) error
 
 	TopUp(
 		ctx context.Context,
-		person model.PersonID,
+		personID model.PersonID,
 		accountID model.AccountID,
 		amount money.Money,
 	) error
@@ -49,10 +56,26 @@ func NewAccount(
 	}
 }
 
+//ErrAccountAlreadyExists
+func (u accountUseCase) Open(ctx context.Context, personID model.PersonID, accountID model.AccountID) error {
+	_, found, err := u.accountRepository.Get(ctx, accountID)
+	if err != nil {
+		return err
+	}
+	if found {
+		return ErrAccountAlreadyExists
+	}
+
+	account := model.NewAccount(accountID)
+	//todo what about access to this personID?
+
+	return u.accountRepository.Save(ctx, account)
+}
+
 //@throws ErrAccessNotAllowed
 func (u accountUseCase) Balance(
 	ctx context.Context,
-	person model.PersonID,
+	personID model.PersonID,
 	accountID model.AccountID,
 ) (money.Money, error) {
 	panic("implement me")
@@ -61,7 +84,7 @@ func (u accountUseCase) Balance(
 //@throws ErrAccessNotAllowed
 func (u accountUseCase) Withdraw(
 	ctx context.Context,
-	person model.PersonID,
+	personID model.PersonID,
 	accountID model.AccountID,
 	amount money.Money,
 ) error {
@@ -69,7 +92,7 @@ func (u accountUseCase) Withdraw(
 		//Perform access checks
 		hasAccess, err := u.accessService.PersonHasAccessToAccount(
 			ctx,
-			person,
+			personID,
 			accountID,
 		)
 		if err != nil {
@@ -98,9 +121,34 @@ func (u accountUseCase) Withdraw(
 //@throws ErrAccessNotAllowed
 func (u accountUseCase) TopUp(
 	ctx context.Context,
-	person model.PersonID,
+	personID model.PersonID,
 	accountID model.AccountID,
 	amount money.Money,
 ) error {
-	panic("implement me")
+	{
+		//Perform access checks
+		hasAccess, err := u.accessService.PersonHasAccessToAccount(
+			ctx,
+			personID,
+			accountID,
+		)
+		if err != nil {
+			return err
+		}
+		if !hasAccess {
+			return ErrAccessNotAllowed
+		}
+	}
+
+	account, found, err := u.accountRepository.Get(ctx, accountID)
+	if err != nil {
+		return err
+	}
+	if !found {
+		return ErrAccountNotFound
+	}
+
+	account.Add(amount)
+
+	return u.accountRepository.Save(ctx, account)
 }
