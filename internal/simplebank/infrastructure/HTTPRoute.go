@@ -14,11 +14,13 @@ func NewHTTPRouteCollection(
 	withdrawHandler := httphandler.NewWithdrawHandler(account)
 	topUpHandler := httphandler.NewTopUpHandler(account)
 	openHandler := httphandler.NewOpenHandler(account)
+	balanceHandler := httphandler.NewBalanceHandler(account)
 
 	r := mux.NewRouter()
 	r.Handle("/account/{accountID}/withdraw/{amount}", withdrawHandler).Methods(http.MethodGet)
 	r.Handle("/account/{accountID}/topup/{amount}", topUpHandler).Methods(http.MethodGet)
 	r.Handle("/account/{accountID}/open", openHandler).Methods(http.MethodGet, http.MethodPost)
+	r.Handle("/account/{accountID}", balanceHandler).Methods(http.MethodGet)
 
 	return r
 }
