@@ -24,6 +24,7 @@ RUN go get github.com/go-delve/delve/cmd/dlv
 
 # Build the executable Mark the build as statically linked.
 RUN go build -installsuffix 'static' -gcflags "all=-N -l" -o /http cmd/http/main.go
+RUN go build -installsuffix 'static' -gcflags "all=-N -l" -o /terminal cmd/terminal/main.go
 
 # Allow delve to run on Alpine based containers.
 #RUN apk add --no-cache libc6-compat postgresql
@@ -33,6 +34,7 @@ COPY --from=migrate /migrate /migrate
 EXPOSE 40000
 
 RUN chmod u+x /http
+RUN chmod u+x /terminal
 
 CMD ["http"]
 
