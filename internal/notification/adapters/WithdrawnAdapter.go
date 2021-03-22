@@ -18,7 +18,7 @@ type WithdrawnAdapter struct {
 	notification application.Notification
 }
 
-func NewWithdrawnAdapter(notification application.Notification) *WithdrawnAdapter {
+func NewWithdrawnAdapter(notification application.Notification) RabbitMQAdapter {
 	return &WithdrawnAdapter{notification: notification}
 }
 
