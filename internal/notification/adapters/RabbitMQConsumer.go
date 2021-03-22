@@ -71,10 +71,16 @@ func handle(ctx context.Context, channel *amqp.Channel, queue string, adapter Ra
 				break
 			}
 
+			fmt.Println("reading " + string(d.Body))
 			err := adapter.Handle(ctx, d)
 			if err != nil {
 				fmt.Println(err.Error())
-				_ = d.Nack(false, true)
+				if d.Redelivered {
+					_ = d.Nack(false, false)
+				} else {
+					_ = d.Nack(false, true)
+				}
+
 				break
 			}
 
