@@ -1,0 +1,23 @@
+GET http://localhost:8080/account/ABCD01/open
+Accept: application/json
+Authorization: Person ABCD
+
+###
+
+GET http://localhost:8080/account/ABCD01
+Accept: application/json
+Authorization: Person ABCD
+
+###
+
+GET http://localhost:8080/account/ABCD01/withdraw/500
+Accept: application/json
+Authorization: Person ABCD
+
+###
+
+GET http://localhost:8080/account/ABCD01/topup/1500
+Accept: application/json
+Authorization: Person ABCD
+
+###
