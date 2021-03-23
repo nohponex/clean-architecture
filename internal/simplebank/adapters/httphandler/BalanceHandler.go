@@ -1,14 +1,11 @@
 package httphandler
 
 import (
-	"fmt"
-	"github.com/Rhymond/go-money"
+	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/nohponex/clean-architecture/internal/simplebank/application"
 	"github.com/nohponex/clean-architecture/internal/simplebank/domain/model"
-	"github.com/thoas/go-funk"
 	"net/http"
-	"strings"
 )
 
 type balanceHandler struct {
@@ -40,25 +37,14 @@ func (h balanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 
-	{
-		//very unorthodox
+	response, err := json.Marshal(balance)
+	if err != nil {
+		panic(err)
+	}
 
-		list := funk.Map(
-			balance,
-			func(money money.Money) string {
-				return fmt.Sprintf(`{"currency": "%s", "amount": %d}`, money.Currency().Code, money.Amount())
-			},
-		).([]string)
-
-		json := fmt.Sprintf(
-			"[%s]",
-			strings.Join(list, ","),
-		)
-
-		w.Header().Add("Authorization", "application/json")
-		_, err = w.Write([]byte(json))
-		if err != nil {
-			panic(err)
-		}
+	w.Header().Add("Authorization", "application/json")
+	_, err = w.Write(response)
+	if err != nil {
+		panic(err)
 	}
 }
