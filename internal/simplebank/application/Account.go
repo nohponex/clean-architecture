@@ -150,7 +150,7 @@ func (u accountUseCase) Withdraw(
 		"withdrawn",
 		map[string]interface{}{
 			"AccountID": accountID,
-			"PersonID":  person,
+			"PersonID":  personID,
 			"Amount":    amount.Amount(),
 			"Currency":  amount.Currency().Code,
 		},
