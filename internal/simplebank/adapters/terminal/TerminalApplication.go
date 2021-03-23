@@ -24,6 +24,9 @@ func TerminalApplication(
 ) {
 	dispatcher := NewCommandDispatcher(
 		&withdraw{account: account},
+		&topUp{account: account},
+		&open{account: account},
+		&balance{account: account},
 	)
 
 	reader := bufio.NewReader(os.Stdin)
@@ -32,7 +35,8 @@ func TerminalApplication(
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Enter your Identity: ")
 		personRaw, _ := reader.ReadString('\n')
-		fmt.Printf("Hello %s", personRaw)
+		personRaw = strings.TrimSpace(personRaw)
+		fmt.Printf("Welcome %q\n", personRaw)
 
 		return model.PersonID(personRaw)
 	}()
