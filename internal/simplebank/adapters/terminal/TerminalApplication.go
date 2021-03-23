@@ -10,14 +10,6 @@ import (
 	"strings"
 )
 
-type command interface {
-	command(
-		ctx context.Context,
-		personID model.PersonID,
-		commandParts []string,
-	) (handled bool, err error)
-}
-
 func TerminalApplication(
 	ctx context.Context,
 	account application.Account,
