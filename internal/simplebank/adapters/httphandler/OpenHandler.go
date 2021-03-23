@@ -1,6 +1,7 @@
 package httphandler
 
 import (
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/nohponex/clean-architecture/internal/simplebank/application"
 	"github.com/nohponex/clean-architecture/internal/simplebank/domain/model"
@@ -34,5 +35,6 @@ func (h openHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	w.Header().Add("Location", fmt.Sprintf("/account/%s", accountID))
+	w.WriteHeader(http.StatusCreated)
 }

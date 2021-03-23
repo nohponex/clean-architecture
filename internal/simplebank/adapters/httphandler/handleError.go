@@ -1,8 +1,19 @@
 package httphandler
 
-import "net/http"
+import (
+	"github.com/nohponex/clean-architecture/internal/simplebank/application"
+	"net/http"
+)
 
 func handleError(w http.ResponseWriter, err error) {
-	w.WriteHeader(http.StatusBadRequest)
+	switch err {
+	case application.ErrAccessNotAllowed:
+		w.WriteHeader(http.StatusForbidden)
+	case application.ErrAccountNotFound:
+		w.WriteHeader(http.StatusNotFound)
+	default:
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
 	_, _ = w.Write([]byte(err.Error()))
 }
