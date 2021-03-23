@@ -17,6 +17,7 @@ func Test_Withdraw_Given_PersonDoesntHaveAccess_ThenShouldFail(t *testing.T) {
 	useCase := NewAccount(
 		nil,
 		accessServiceMock,
+		getMessagingStub(),
 	)
 
 	err := useCase.Withdraw(
@@ -45,6 +46,7 @@ func Test_Withdraw_GivenAccountNotFound_ThenShouldFail(t *testing.T) {
 	useCase := NewAccount(
 		accountRepositoryStub,
 		getAnAllowedAllAccessServiceStub(),
+		getMessagingStub(),
 	)
 
 	err := useCase.Withdraw(
@@ -89,6 +91,7 @@ func Test_Withdraw_Given_ThenShouldWithdrawAndSave(t *testing.T) {
 	useCase := NewAccount(
 		accountRepositoryMock,
 		getAnAllowedAllAccessServiceStub(),
+		getMessagingStub(),
 	)
 
 	amount := *money.New(50, "EUR")
@@ -130,6 +133,21 @@ func getAnAllowedNoneAccessServiceStub() *servicesMocks.AccessService {
 		mock.Anything,
 	).Return(
 		false,
+		nil,
+	)
+
+	return stub
+}
+
+func getMessagingStub() *repositoriesMocks.Messaging {
+	stub := new(repositoriesMocks.Messaging)
+
+	stub.On(
+		"Publish",
+		mock.Anything,
+		mock.Anything,
+		mock.Anything,
+	).Return(
 		nil,
 	)
 
