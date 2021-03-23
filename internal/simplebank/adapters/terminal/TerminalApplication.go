@@ -15,16 +15,17 @@ func TerminalApplication(
 	account application.Account,
 ) {
 	dispatcher := NewCommandDispatcher(
-		&withdraw{account: account},
-		&topUp{account: account},
 		&open{account: account},
 		&balance{account: account},
+		&withdraw{account: account},
+		&topUp{account: account},
 	)
 
 	reader := bufio.NewReader(os.Stdin)
 
 	personID := func() model.PersonID {
 		reader := bufio.NewReader(os.Stdin)
+		fmt.Println("This is simplebank")
 		fmt.Print("Enter your Identity: ")
 		personRaw, _ := reader.ReadString('\n')
 		personRaw = strings.TrimSpace(personRaw)
@@ -32,6 +33,14 @@ func TerminalApplication(
 
 		return model.PersonID(personRaw)
 	}()
+
+	{
+		fmt.Println("Available commands:")
+		for _, c := range dispatcher.commands {
+			fmt.Println(c.help())
+		}
+		fmt.Println()
+	}
 
 	for {
 		fmt.Println("Command: ")

@@ -9,8 +9,14 @@ import (
 	"strings"
 )
 
+const balanceCommandName = "balance"
+
 type balance struct {
 	account application.Account
+}
+
+func (balance) help() string {
+	return fmt.Sprintf("%s {accountID}", balanceCommandName)
 }
 
 func (c balance) command(
@@ -18,7 +24,7 @@ func (c balance) command(
 	personID model.PersonID,
 	commandParts []string,
 ) (handled bool, err error) {
-	if strings.ToLower(commandParts[0]) != "balance" || len(commandParts) != 2 {
+	if strings.ToLower(commandParts[0]) != balanceCommandName || len(commandParts) != 2 {
 		return false, nil
 	}
 

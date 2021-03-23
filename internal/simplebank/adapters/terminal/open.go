@@ -2,13 +2,20 @@ package terminal
 
 import (
 	"context"
+	"fmt"
 	"github.com/nohponex/clean-architecture/internal/simplebank/application"
 	"github.com/nohponex/clean-architecture/internal/simplebank/domain/model"
 	"strings"
 )
 
+const openCommandName = "open"
+
 type open struct {
 	account application.Account
+}
+
+func (open) help() string {
+	return fmt.Sprintf("%s {accountID}", openCommandName)
 }
 
 func (c open) command(
@@ -16,7 +23,7 @@ func (c open) command(
 	personID model.PersonID,
 	commandParts []string,
 ) (handled bool, err error) {
-	if strings.ToLower(commandParts[0]) != "open" || len(commandParts) != 2 {
+	if strings.ToLower(commandParts[0]) != openCommandName || len(commandParts) != 2 {
 		return false, nil
 	}
 

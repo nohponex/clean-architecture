@@ -11,4 +11,6 @@ type command interface {
 		personID model.PersonID,
 		commandParts []string,
 	) (handled bool, err error)
+
+	help() string
 }
