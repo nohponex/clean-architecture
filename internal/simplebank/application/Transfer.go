@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"github.com/Rhymond/go-money"
+	"github.com/nohponex/clean-architecture/internal/simplebank/domain/domainservice"
 	"github.com/nohponex/clean-architecture/internal/simplebank/domain/services"
 
 	"github.com/nohponex/clean-architecture/internal/simplebank/domain/model"
@@ -21,12 +22,12 @@ type (
 )
 
 type transfer struct {
-	transferService services.Transfer
+	transferService domainservice.Transfer
 	accessService   services.AccessService
 }
 
 func NewTransfer(
-	transferService services.Transfer,
+	transferService domainservice.Transfer,
 	accessService services.AccessService,
 ) Transfer {
 	return &transfer{transferService: transferService, accessService: accessService}

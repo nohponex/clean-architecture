@@ -1,4 +1,4 @@
-package services
+package domainservice
 
 import (
 	"context"
@@ -7,6 +7,8 @@ import (
 	"github.com/nohponex/clean-architecture/internal/simplebank/domain/model"
 	"github.com/nohponex/clean-architecture/internal/simplebank/domain/repositories"
 )
+
+var ErrCannotTransferNegativeAmount = errors.New("cannot transfer negative amount")
 
 type Transfer interface {
 	Transfer(
@@ -25,12 +27,17 @@ func NewTransfer(accountRepository repositories.AccountRepository) Transfer {
 	return &transfer{accountRepository: accountRepository}
 }
 
+//ErrCannotTransferNegativeAmount
 func (s transfer) Transfer(
 	ctx context.Context,
 	from model.AccountID,
 	to model.AccountID,
 	amount money.Money,
 ) error {
+	if amount.Amount() < 0 {
+		return ErrCannotTransferNegativeAmount
+	}
+
 	fromAccount, found, err := s.accountRepository.Get(ctx, from)
 	if err != nil {
 		return err
