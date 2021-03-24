@@ -44,15 +44,18 @@ type Account interface {
 type accountUseCase struct {
 	accountRepository repositories.AccountRepository
 	accessService     services.AccessService
+	messaging         repositories.Messaging
 }
 
 func NewAccount(
 	accountRepository repositories.AccountRepository,
 	accessService services.AccessService,
+	messaging repositories.Messaging,
 ) Account {
 	return &accountUseCase{
 		accountRepository: accountRepository,
 		accessService:     accessService,
+		messaging:         messaging,
 	}
 }
 
@@ -138,7 +141,20 @@ func (u accountUseCase) Withdraw(
 		return err
 	}
 
-	return u.accountRepository.Save(ctx, account)
+	if err := u.accountRepository.Save(ctx, account); err != nil {
+		return err
+	}
+
+	return u.messaging.Publish(
+		ctx,
+		"withdrawn",
+		map[string]interface{}{
+			"AccountID": accountID,
+			"PersonID":  personID,
+			"Amount":    amount.Amount(),
+			"Currency":  amount.Currency().Code,
+		},
+	)
 }
 
 //@throws ErrAccessNotAllowed
